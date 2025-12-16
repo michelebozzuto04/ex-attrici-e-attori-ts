@@ -24,7 +24,7 @@ type Actress = Person & {
   'Chinese'
 }
 
-function isActress(data: unknown) {
+function isActress(data: unknown): data is Actress {
   if (
     data &&
     typeof data === 'object' &&
@@ -38,9 +38,8 @@ function isActress(data: unknown) {
     "nationality" in data
   ) {
     return true
-  } else {
-    false
   }
+  return false
 }
 
 async function getActress(id: number): Promise<Actress | null> {
@@ -52,16 +51,25 @@ async function getActress(id: number): Promise<Actress | null> {
 }
 
 async function getAllActresses(): Promise<Actress[] | null> {
-  const res = await fetch(`http://localhost:3333/actresses`).then(res => res.json());
-  if (Array.isArray(res)) {
-    res.forEach(act => {
-      if (isActress(act)) {
-        return act as Actress
-      }
-    })
-  }
-  return null
+  const res = await fetch(`http://localhost:3333/actresses`)
+    .then(res => res.json());
+
+  if (!Array.isArray(res)) return null;
+
+  const actresses = res.filter(isActress);
+
+  return actresses;
 }
 
-getActress(1)
-getAllActresses()
+async function getActresses(actressesIds: number[]): Promise<Actress[] | null> {
+  const promises = actressesIds.map(id => getActress(id));
+  const res = await Promise.all(promises);
+
+  const actresses = res.filter((act) => isActress(act));
+
+  return actresses.length ? actresses : null;
+}
+
+console.log(getActress(1))
+console.log(getAllActresses())
+console.log(getActresses([1, 2, 3]))
