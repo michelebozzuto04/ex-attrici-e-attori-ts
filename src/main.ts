@@ -36,7 +36,7 @@ type Actress = Person & {
 
 type Actor = Person & {
   known_for: [string, string, string]
-  awards: [string, ...string[]]
+  awards: [string] | [string, string]
   nationality: actressNationality | actorNationality
 }
 
