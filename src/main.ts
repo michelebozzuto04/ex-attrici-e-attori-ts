@@ -208,6 +208,25 @@ function updateActor(actor: Actor, updates: Partial<Omit<Actor, "id" | "name">>)
   }
 }
 
+// Random Couple function
+
+async function createRandomCouple(): Promise<[Actress, Actor] | null> {
+  const randomActressId = Math.floor(Math.random() * 40);
+  const randomActorId = Math.floor(Math.random() * 40);
+
+  const actresses = await getAllActresses();
+  const actors = await getAllActors();
+
+  const actress = actresses.find(a => a.id === randomActressId);
+  const actor = actors.find(a => a.id === randomActorId);
+
+  if (!actress || !actor) {
+    return null;
+  }
+
+  return [actress, actor];
+}
+
 
 // Actresses test
 
@@ -260,3 +279,5 @@ console.log(createActor({
   awards: ['Academy Award', 'Golden Globe'],
   nationality: 'American'
 }));
+
+createRandomCouple().then(res => console.log('Random couple:', res));
